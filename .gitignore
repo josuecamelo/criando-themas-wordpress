@@ -23,4 +23,5 @@ node_modules/
 *.log
 *.sql
 *.sqlite
-
+wp-content/upgrade/
+.idea
