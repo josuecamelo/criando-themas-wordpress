@@ -1,7 +1,7 @@
 <?php
 /**
  * Bootstrap Basic theme
- * 
+ *
  * @package bootstrap-basic
  */
 
@@ -31,12 +31,12 @@ if (!function_exists('bootstrapBasicSetup')) {
     /**
      * Setup theme and register support wp features.
      */
-    function bootstrapBasicSetup() 
+    function bootstrapBasicSetup()
     {
         /**
          * Make theme available for translation
          * Translations can be filed in the /languages/ directory
-         * 
+         *
          * copy from underscores theme
          */
         load_theme_textdomain('bootstrap-basic', get_template_directory() . '/languages');
@@ -64,11 +64,11 @@ if (!function_exists('bootstrapBasicSetup')) {
 
         // add support custom background
         add_theme_support(
-            'custom-background', 
+            'custom-background',
             apply_filters(
-                'bootstrap_basic_custom_background_args', 
+                'bootstrap_basic_custom_background_args',
                 array(
-                    'default-color' => 'ffffff', 
+                    'default-color' => 'ffffff',
                     'default-image' => ''
                 )
             )
@@ -96,7 +96,7 @@ if (!function_exists('bootstrapBasicWidgetsInit')) {
     /**
      * Register widget areas
      */
-    function bootstrapBasicWidgetsInit() 
+    function bootstrapBasicWidgetsInit()
     {
         register_sidebar(array(
             'name' => __('Sidebar right', 'bootstrap-basic'),
@@ -160,10 +160,10 @@ add_action('widgets_init', 'bootstrapBasicWidgetsInit');
 if (!function_exists('bootstrapBasicEnqueueScripts')) {
     /**
      * Enqueue scripts & styles
-     * 
+     *
      * @global \WP_Scripts $wp_scripts
      */
-    function bootstrapBasicEnqueueScripts() 
+    function bootstrapBasicEnqueueScripts()
     {
         global $wp_scripts;
 
@@ -181,7 +181,7 @@ if (!function_exists('bootstrapBasicEnqueueScripts')) {
         wp_register_script('html5-shiv-script', get_template_directory_uri() . '/js/vendor/html5shiv.min.js', array(), '3.7.3', true);
         $wp_scripts->add_data('html5-shiv-script', 'conditional', 'lte IE 9');
         wp_enqueue_script('html5-shiv-script');
-        
+
         if (is_singular() && get_option('thread_comments')) {
             wp_enqueue_script('comment-reply');
         }
@@ -249,4 +249,167 @@ require get_template_directory() . '/inc/template-functions.php';
  */
 require get_template_directory() . '/inc/widgets/BootstrapBasicSearchWidget.php';
 require get_template_directory() . '/inc/template-widgets-hook.php';
+
+
+/**
+ * --------------------------------------------------------------
+ * Criação de Custom Post Types
+ * --------------------------------------------------------------
+ */
+
+function bootstrap_son_post_type_filmes(){
+    $labels = array(
+
+        'name' => "Filmes",
+        'singular_name' => "Filme",
+        'add_new'=> "Adicionar Novo Filme",
+        'add_new_label' => "Adicionar Novo Filme",
+        'all_item' => "Todos os Filmes",
+        'add_new_item'=> "Adicionar Novo Filme",
+        'edit_item' => "Editar Filme",
+        'new_item' =>  "Novo Filme",
+        'view_item' => "Visualizar Filme",
+        'search_item' => "Procurar Filme",
+        'not_found' => "Nenhum Filme Encontrado",
+        'not_found_in_trash' => "Nenhum Filme Na Lixeira"
+    );
+    $args = array(
+
+        'labels' => $labels,
+        'public' => true,
+        'has_archive' => true,
+        'publicly_queryable' => true,
+        'query_var' => true,
+        'rewrite' => true,
+        'capability_type' => 'post',
+        'supports' => array(
+            'title','editor','thumbnail','excerpt'
+        ),
+        'menu_position' => 5,
+        'exclude_from_search' => false
+    );
+    register_post_type('filmes',$args);
+}
+add_action('init','bootstrap_son_post_type_filmes');
+
+function bootstrap_son_taxonomias(){
+    // Taxonomia Hierarquica - Gênero
+    $labels = array(
+        'name'=> "Gêneros",
+        'singular_name' => "Gênero",
+        'search_items' => "Procurar Gênero",
+        'all_items'=> "Todos os Gêneros",
+        'parent_item' =>  "Gênero Pai",
+        'parent_item_colon' => "Gênero Pai",
+        'edit_item' => "Editar Gênero",
+        'update_item' =>  "Atualizar Gênero",
+        'add_new_item' => "Adicionar Novo Gênero",
+        'new_item_name' => "Novo Gênero",
+        'menu_name'=> "Gênero"
+    );
+    $args = array(
+        'hierarchical' => true,
+        'labels' => $labels,
+        'show_admin_column' => true,
+        'query_var'=> true,
+        'has_archive' => true,
+        'rewrite'=> array("slug"=>"genero")
+
+    );
+
+    register_taxonomy('genero','filmes', $args);
+    //  Taxonomia N/ Hierarquica - Diretores
+    $labels = array(
+        'name'=> "Diretores",
+        'singular_name' => "Diretor",
+        'search_items' => "Procurar Diretor",
+        'all_items'=> "Todos os Diretoress",
+        'parent_item' =>  "Diretor Pai",
+        'parent_item_colon' => "Diretor Pai",
+        'edit_item' => "Editar Diretor",
+        'update_item' =>  "Atualizar Diretor",
+        'add_new_item' => "Adicionar Novo Diretor",
+        'new_item_name' => "Novo Diretor",
+        'menu_name'=> "Diretor"
+    );
+    $args = array(
+        'hierarchical' => false,
+        'labels' => $labels,
+        'show_admin_column' => true,
+        'query_var'=> true,
+        'rewrite'=> array("slug"=>"diretores")
+
+    );
+    register_taxonomy('diretores', 'filmes', $args);
+}
+add_action('init','bootstrap_son_taxonomias');
+
+
+/**
+ * --------------------------------------------------------------
+ *  Criação de Custom Post Types - Projeto Final - School of net
+ * --------------------------------------------------------------
+ */
+function bootstrap_son_post_type_carros(){
+    $labels = array(
+
+        'name' => "Carros",
+        'singular_name' => "Carro",
+        'add_new'=> "Adicionar Novo Carro",
+        'add_new_label' => "Adicionar Novo Carro",
+        'all_item' => "Todos os Carros",
+        'add_new_item'=> "Adicionar Novo Carro",
+        'edit_item' => "Editar Carro",
+        'new_item' =>  "Novo Carro",
+        'view_item' => "Visualizar Carro",
+        'search_item' => "Procurar Carro",
+        'not_found' => "Nenhum Carro Encontrado",
+        'not_found_in_trash' => "Nenhum Carro Na Lixeira"
+    );
+    $args = array(
+
+        'labels' => $labels,
+        'public' => true,
+        'has_archive' => true,
+        'publicly_queryable' => true,
+        'query_var' => true,
+        'rewrite' => true,
+        'capability_type' => 'post',
+        'supports' => array(
+            'title','editor','thumbnail'
+        ),
+        'menu_position' => 6,
+        'exclude_from_search' => false
+    );
+    register_post_type('carros',$args);
+}
+add_action('init','bootstrap_son_post_type_carros');
+function bootstrap_son_taxonomia_carros(){
+    // Taxonomia Hierarquica - Gênero
+    $labels = array(
+        'name'=> "Categoria",
+        'singular_name' => "Categoria",
+        'search_items' => "Procurar Categoria",
+        'all_items'=> "Todos os Categoria",
+        'parent_item' =>  "Categoria Pai",
+        'parent_item_colon' => "Categoria Pai",
+        'edit_item' => "Editar Categoria",
+        'update_item' =>  "Atualizar Categoria",
+        'add_new_item' => "Adicionar Novo Categoria",
+        'new_item_name' => "Novo Categoria",
+        'menu_name'=> "Categoria"
+    );
+    $args = array(
+        'hierarchical' => true,
+        'labels' => $labels,
+        'show_admin_column' => true,
+        'query_var'=> true,
+        'has_archive' => true,
+        'rewrite'=> array("slug"=>"categoria")
+
+    );
+
+    register_taxonomy('categoria','carros', $args);
+}
+add_action('init', 'bootstrap_son_taxonomia_carros');
 
